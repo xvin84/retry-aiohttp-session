@@ -1,0 +1,51 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "retry-aiohttp-session"
+version = "0.1.0"
+description = "Drop-in aiogram session that retries Telegram Bot API calls on transient network errors."
+readme = "README.md"
+requires-python = ">=3.11"
+license = { text = "MIT" }
+authors = [{ name = "xvin84" }]
+keywords = ["aiogram", "telegram", "bot", "retry", "aiohttp", "proxy", "resilience"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Framework :: AsyncIO",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Communications :: Chat",
+    "Topic :: Software Development :: Libraries",
+]
+dependencies = [
+    "aiogram>=3.7,<4",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8",
+    "pytest-asyncio>=0.23",
+    "ruff>=0.5",
+]
+
+[project.urls]
+Homepage = "https://github.com/xvin84/retry-aiohttp-session"
+Repository = "https://github.com/xvin84/retry-aiohttp-session"
+Issues = "https://github.com/xvin84/retry-aiohttp-session/issues"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/retry_aiohttp_session"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+testpaths = ["tests"]
