@@ -3,11 +3,11 @@
 **English** | [Русский](README.ru.md)
 
 A drop-in [aiogram](https://github.com/aiogram/aiogram) session that transparently
-retries Telegram Bot API calls on transient network failures — timeouts, dropped
+retries Telegram Bot API calls on transient network failures - timeouts, dropped
 connections, Telegram 5xx responses, and proxy-level errors.
 
 Because aiogram routes every Bot API request through `AiohttpSession.make_request`,
-a single session instance covers **all** methods — `send_message`, `send_document`,
+a single session instance covers **all** methods - `send_message`, `send_document`,
 `edit_message_text`, `answer_callback_query`, and the rest. No per-call retry code,
 no changes to your handlers.
 
@@ -16,7 +16,7 @@ no changes to your handlers.
 Extracted from a production bot deployed behind an unreliable HTTP/SOCKS proxy,
 where roughly one new connection in five timed out. Without retries, every timeout
 meant a user simply never received their reply. Wrapping the session turned those
-failures into transparent, logged retries — one small class, zero changes to the
+failures into transparent, logged retries - one small class, zero changes to the
 handler code.
 
 ## Install
@@ -41,7 +41,7 @@ session = RetryAiohttpSession(
 bot = Bot(token="123:ABC", session=session)
 ```
 
-That is the whole integration — every API call the bot makes is now retried on a
+That is the whole integration - every API call the bot makes is now retried on a
 transient error. See [`examples/basic_bot.py`](examples/basic_bot.py) for a runnable bot.
 
 ## How it works
@@ -50,7 +50,7 @@ transient error. See [`examples/basic_bot.py`](examples/basic_bot.py) for a runn
 `make_request`:
 
 - **Transient network errors** (`TelegramNetworkError`, `TelegramServerError`,
-  `asyncio.TimeoutError`, `OSError`) are retried with linear backoff —
+  `asyncio.TimeoutError`, `OSError`) are retried with linear backoff -
   `min(backoff_base * attempt, backoff_max)` seconds.
 - **Proxy errors** from `python-socks` (`ProxyError`, `ProxyTimeoutError`) subclass
   plain `Exception` rather than `aiohttp.ClientError`, so aiogram never wraps them in
@@ -59,7 +59,7 @@ transient error. See [`examples/basic_bot.py`](examples/basic_bot.py) for a runn
 - **`TelegramRetryAfter`** (Telegram rate limiting) is always honoured by sleeping
   exactly `retry_after + 1` seconds, independent of the backoff settings.
 - **Everything else** (`TelegramBadRequest`, `asyncio.CancelledError`, …) is
-  re-raised immediately — there is no point retrying a malformed request or a
+  re-raised immediately - there is no point retrying a malformed request or a
   cancelled task.
 
 Each retry is logged at `WARNING` level via the standard `logging` module under the

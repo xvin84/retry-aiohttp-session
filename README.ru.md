@@ -3,12 +3,12 @@
 [English](README.md) | **Русский**
 
 Готовая к подключению сессия для [aiogram](https://github.com/aiogram/aiogram),
-которая прозрачно повторяет вызовы Telegram Bot API при временных сетевых сбоях —
+которая прозрачно повторяет вызовы Telegram Bot API при временных сетевых сбоях -
 таймаутах, обрывах соединения, ответах 5xx от Telegram и ошибках уровня прокси.
 
 Поскольку aiogram проводит каждый запрос к Bot API через
 `AiohttpSession.make_request`, одного экземпляра сессии достаточно, чтобы покрыть
-**все** методы — `send_message`, `send_document`, `edit_message_text`,
+**все** методы - `send_message`, `send_document`, `edit_message_text`,
 `answer_callback_query` и остальные. Никакого кода повторов в хэндлерах.
 
 ## Зачем
@@ -16,7 +16,7 @@
 Класс выделен из продакшен-бота, развёрнутого за нестабильным HTTP/SOCKS-прокси,
 где примерно одно новое соединение из пяти отваливалось по таймауту. Без повторов
 каждый такой таймаут означал, что пользователь просто не получал ответ. Обёртка над
-сессией превратила эти сбои в прозрачные, логируемые повторы — один небольшой класс
+сессией превратила эти сбои в прозрачные, логируемые повторы - один небольшой класс
 и ноль правок в коде хэндлеров.
 
 ## Установка
@@ -42,8 +42,8 @@ session = RetryAiohttpSession(
 bot = Bot(token="123:ABC", session=session)
 ```
 
-Это вся интеграция — каждый вызов API, который делает бот, теперь повторяется при
-временной ошибке. Запускаемый пример — в [`examples/basic_bot.py`](examples/basic_bot.py).
+Это вся интеграция - каждый вызов API, который делает бот, теперь повторяется при
+временной ошибке. Запускаемый пример - в [`examples/basic_bot.py`](examples/basic_bot.py).
 
 ## Как это работает
 
@@ -51,16 +51,16 @@ bot = Bot(token="123:ABC", session=session)
 `make_request`:
 
 - **Временные сетевые ошибки** (`TelegramNetworkError`, `TelegramServerError`,
-  `asyncio.TimeoutError`, `OSError`) повторяются с линейным backoff —
+  `asyncio.TimeoutError`, `OSError`) повторяются с линейным backoff -
   `min(backoff_base * attempt, backoff_max)` секунд.
 - **Ошибки прокси** из `python-socks` (`ProxyError`, `ProxyTimeoutError`) наследуют
   обычный `Exception`, а не `aiohttp.ClientError`, поэтому aiogram не оборачивает их
-  в `TelegramNetworkError`. Они ловятся по имени класса (`"Proxy"` / `"Timeout"`) —
+  в `TelegramNetworkError`. Они ловятся по имени класса (`"Proxy"` / `"Timeout"`) -
   так пакет не зависит жёстко от конкретного прокси-бэкенда.
 - **`TelegramRetryAfter`** (rate limit от Telegram) всегда соблюдается: сессия ждёт
   ровно `retry_after + 1` секунд, независимо от настроек backoff.
 - **Всё остальное** (`TelegramBadRequest`, `asyncio.CancelledError`, …)
-  пробрасывается сразу — нет смысла повторять некорректный запрос или отменённую
+  пробрасывается сразу - нет смысла повторять некорректный запрос или отменённую
   задачу.
 
 Каждый повтор логируется на уровне `WARNING` через стандартный модуль `logging`
